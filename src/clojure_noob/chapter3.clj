@@ -1,6 +1,9 @@
 (ns clojure-noob.chapter3
   (:gen-class))
 
+;; get doc to the current namespace
+(clojure.core/use '[clojure.repl :only (doc)])
+
 ;; if form (then and else are only single forms)
 
 (if true
@@ -145,4 +148,40 @@
 ;; 220
 
 ;; defining functions
+(defn test-function                   ;; defn name of the function
+  "This is a doc string"              ;; documentation string (optional)
+  [name]                              ;; parameters in [] brackets
+  (str "This is jut a test: " name))  ;; function body
+
+;; number of parameters is called 'arity' 
+
+;; 0-arity function
+(defn zero-ar
+  []
+  (str "No parameters!"))
+
+;; 2-arity function
+(defn two-ar
+  [x y]
+  (str "Two params: " x y))
+
+;; functions can have different behavior depending on number of parameters given
+;; (effectively operator overloading)
+
+(defn multi-ar
+  ([one]
+   (str "Just one: " one))
+  ([one two]
+   (str "Two this time: " one two))
+  ([one two three]
+   (str "Max three: " one two three)))
+
+;; ;; use arity overloading to provide default parameters
+(defn karate-chop
+  ([name chop-type]
+   (str name " will " chop-type " chop you!"))
+  ([name] 
+   (karate-chop name "karate")))
+
+(karate-chop "I" "ass")
 
