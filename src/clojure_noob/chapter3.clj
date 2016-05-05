@@ -133,8 +133,16 @@
 ;; Functions
 ;;
 
+(or + -)  ;; functions are equal to any other variable
+((or + -) 1 2 3)
+((and (= 1 1) +) 1 2 3)
 
+;; order of execution - all arguments are evaluated recursively before passing them to the function
+(+ (inc 199) (/ 100 (- 7 2)))
+;; (+ 200 (/ 100 (- 7 2)))
+;; (+ 200 (/ 100 5))
+;; (+ 200 20)
+;; 220
 
-
-
+;; defining functions
 
