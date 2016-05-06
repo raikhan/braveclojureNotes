@@ -246,3 +246,26 @@
 
 ;; function body 
 
+;; functions automatically return the last evaluated form
+
+(defn a-function 
+  []
+  (+ 1 2 3 4)
+  30
+  "return this")
+
+;; Anonymous Functions
+;; Two ways to define anonymous functions:
+
+;; 1) (fn [param-list] function body)
+
+(println 
+ (map (fn [x] (str "What is x? " x))
+      [1 2 3]))
+
+;; give an anonymous function a name
+(def anon-func (fn [x] (* x x)))
+(anon-func 5)
+
+;; 2) #(function %) where % is a parameter. This comes from 'reader macros' (Chapter 7)
+(#(* % 3) 8)
