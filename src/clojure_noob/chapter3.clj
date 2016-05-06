@@ -176,7 +176,7 @@
   ([one two three]
    (str "Max three: " one two three)))
 
-;; ;; use arity overloading to provide default parameters
+;; use arity overloading to provide default parameters
 (defn karate-chop
   ([name chop-type]
    (str name " will " chop-type " chop you!"))
@@ -184,4 +184,65 @@
    (karate-chop name "karate")))
 
 (karate-chop "I" "ass")
+
+;; variable arity paramter - &. All extra parameters supplied as a vector
+(defn send-greeting
+  [person]
+  (str "Whazzup " person))
+
+(defn multi-greeting
+  [& persons]     ;; variable arity !
+  (map send-greeting persons))
+(multi-greeting "mama" "tata" "baka")
+
+;; variable arity vector comes after required parameters
+(defn multi-greeting-plus-one
+  [name & persons]     ;; variable arity !
+  (conj (map send-greeting persons) (str "The name is " name))) ;; appended a string to vector from map
+(multi-greeting-plus-one "ja"  "mama" "tata" "baka")
+
+;; Destructuring - extracting individual parameters from passed in collections 
+
+(defn first-element
+  [[first-el]]  ;; [[]] means that a parameter will be a vector
+  first-el)
+(first-element [1 2 3 4]) ;; function returns 1
+
+;; this can be combined with variable arity parameters
+(defn chooser
+  [[first-el second-el & other-el]]
+  (println (str "Value 1: " first-el))
+  (println (str "Value 2: " second-el))
+  (println (str "All others: " 
+                (clojure.string/join ", " other-el))))
+(chooser [1 2 3 4 5 6])
+
+;; maps can also be desrtuctured
+(defn announce-treasure-location 
+  [{lat :lat lng :lon}]
+  (println (str "Latitude: " lat))
+  (println (str "Longitude: " lng)))
+(announce-treasure-location {:lat 23.4 :lon 12.2})
+
+;; instead of renaming map keys, we can just break them out of the map:
+(defn announce-treasure-location 
+  [{:keys [lat lon]}]
+  (println (str "Latitude: " lat))
+  (println (str "Longitude: " lon)))
+(announce-treasure-location {:lat 23.4 :lon 12.2})
+
+;; :as keyword allow access to the input map directly
+(defn steer-ship
+  [treasure-map]
+  (println (str "Onwards! " 
+                (get treasure-map :lat)
+                (get treasure-map :lon))))
+(defn announce-treasure-location-and-move 
+  [{:keys [lat lon] :as treasure-loc}]
+  (println (str "Latitude: " lat))
+  (println (str "Longitude: " lon))
+  (steer-ship treasure-loc))
+(announce-treasure-location-and-move {:lat 23.4 :lon 12.2})
+
+;; function body 
 
