@@ -269,3 +269,151 @@
 
 ;; 2) #(function %) where % is a parameter. This comes from 'reader macros' (Chapter 7)
 (#(* % 3) 8)
+
+;;
+;; Functions returned by other functions are closures - they have access to parent function parameters
+;;
+
+(defn custom-increment 
+  [inc-by]
+  #(+ % inc-by))
+
+(def inc3 (custom-increment 3))
+
+(inc3 7)
+
+;;
+;; Chapter 3 - pulling it all together
+;;
+;; covers: let, loops and regular expressions
+;;
+
+
+;; let - bind name to value within an expression
+;;       1) naming gives clarity
+;;       2) naming allows reusing evaluated expressions
+(let [x 3]
+  x)
+
+;; let introduces new scope:
+(def x 0)
+(let [x 1]
+  (print x))
+
+;; let accepts rest parameters
+(def array [1 2 3 4])
+(let [[x & y] array]    ;; here array is destructured to first element in x, rest in y
+  [x y])
+
+;; into - add elements from one vector to another vector
+(into [4 5] [1 2 3])
+
+;; loop / recur - for loops in Clojure
+(loop [iteration 0]   ;; loop entry point with initial value
+  (println (str "Iter: " iteration))
+  (if (> iteration 3)
+    (println "Goodbye")
+    (recur (inc iteration))))
+
+;; same can be implemented without a loop
+(defn rec-printer
+  ([]               ;; 0 arity
+   (rec-printer 0))
+  ([iteration]      ;; 1 arity
+   (println iteration)
+   (if (> iteration 3)
+     (println "Goodbye!")
+     (rec-printer (inc iteration)))))
+(rec-printer)
+
+;; loop can have multiple parameters
+(loop [increment 0
+       values []]
+  (println increment)
+  (println values)
+  (if (> increment 3)
+    (println "done")
+    (recur (inc increment)
+           (conj values increment))))
+
+
+
+;; vector of maps. Only left parts of the body there, need to add right ones
+(def asym-hobbit-body-parts [{:name "head" :size 3}
+                             {:name "left-eye" :size 1}
+                             {:name "left-ear" :size 1}
+                             {:name "mouth" :size 1}
+                             {:name "nose" :size 1}
+                             {:name "neck" :size 2}
+                             {:name "left-shoulder" :size 3}
+                             {:name "left-upper-arm" :size 3}
+                             {:name "chest" :size 10}
+                             {:name "back" :size 10}
+                             {:name "left-forearm" :size 3}
+                             {:name "abdomen" :size 6}
+                             {:name "left-kidney" :size 1}
+                             {:name "left-hand" :size 2}
+                             {:name "left-knee" :size 2}
+                             {:name "left-thigh" :size 4}
+                             {:name "left-lower-leg" :size 3}
+                             {:name "left-achilles" :size 1}
+                             {:name "left-foot" :size 2}])
+
+
+;; Finished Hobbit routine
+(defn matching-part
+  "Replace string mention of \"left-\" with \"right-\""
+  [part]
+  {:name (clojure.string/replace (:name part) #"^left-" "right-")
+   :size (:size part)})
+
+(matching-part {:name "left-test" :size 2})
+
+
+(defn symmetrize-body-parts
+  "Expects a seq of maps that have a :name and :size"
+  [asym-body-parts]
+  (loop [remaining-asym-parts asym-body-parts   ;; 2 loop parameters: remaining-asym-parts and final-body-parts
+         final-body-parts []]
+    (if (empty? remaining-asym-parts)  ;; if all the body parts have been processed, finish the loop
+      final-body-parts
+      (let [[part & remaining] remaining-asym-parts]  ;; split the unprocessed body parts into first element and rest
+        (recur remaining                ;; recur to operate on the leftover parts
+               (into final-body-parts   ;; add processed part to the final vector
+                     (set [part (matching-part part)])))))))   ;; set - makes a unique set from vector
+
+(map 
+ println
+ (symmetrize-body-parts asym-hobbit-body-parts)) 
+
+
+
+;; alternative way to symmetrise the hobbit body - reduce
+(reduce + [1 2 3 4])
+(reduce + 15 [1 2 3 4]) ;; reduce with optional initial value
+
+;; symmetrizer with reduce
+(defn better-symmetrize-body-parts
+  "Epects a seq of maps with :name and :size. Returns another seq of same maps"
+  [asym-body-parts]
+  (reduce 
+   (fn [final-body-parts part]
+     (into final-body-parts (set [part (matching-part part)])))
+   [] ;; initial value
+   asym-body-parts))
+(better-symmetrize-body-parts asym-hobbit-body-parts)
+
+;; Hit the hobbit - randomly choose which body part is hit
+(defn hit
+  [asym-body-parts]
+  (let [sym-parts (better-symmetrize-body-parts asym-body-parts)  ;; add right side of the body 
+        body-part-size-sum (reduce + (map :size sym-parts))       ;; compute total size of the body
+        target (rand body-part-size-sum)]                         ;; choose random number to hit
+    (loop [[part & remaining] sym-parts
+           accumulated-size (:size part)]    ;; initial accumulated size of body parts
+      (if (> accumulated-size target)        ;; body part is hit when the accumulated sizes of parts are bigger than chosen random number
+        part
+        (recur remaining (+ accumulated-size (:size (first remaining)))))))) ;; if no hit, get next part
+
+(hit asym-hobbit-body-parts) ;; hit the hobbit
+
