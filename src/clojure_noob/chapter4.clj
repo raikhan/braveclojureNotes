@@ -55,3 +55,20 @@
    {:alias "Hawkeye" :real "Clint Burton"}])
 (map :real identities)
 
+
+;; reduce
+
+;; use reduce to filter maps
+(reduce (fn [new-map [key val]]
+          (if (> val 4)
+            (assoc new-map key val)
+            new-map))
+        {}            ;; initial value (optional). If not given, the return is a vector!!!
+        {:one 4.1
+         :two 3.0})   ;; value :two removed from output map
+;; Exercise: implement map using reduce
+
+
+;; take, drop, take-while and drop-while
+
+
