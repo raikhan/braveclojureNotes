@@ -170,4 +170,30 @@
 ;; Function functions - apply and partial
 ;;
 
+;; apply explodes a sequence so it can be passed to routines that expect single parameters
+;;
+(max 1 2 3)  ;; => 3
+(max [1 2 3]) ;; => [1 2 3]
+
+;; to get the max element in vector:
+(apply max [1 2 3])
+
+;; partial takes a function and any number of arguments and returns a new function
+;; When that new function is called with any arguments, it calls the original function and 
+;; provides the parameters given to partial and new parameters
+(def add10 (partial + 10))  ;; assigned the partial function to variable name add10
+(add10 3)
+(add10 5)
+
+
+;; complement - function to get the negation of a Boolean function 
+(def my-not-empty #(not (empty? %)))
+(my-not-empty [])  ;; false 
+(my-not-empty [1 2 3]) ;; true
+
+(def my-not-empty (complement empty?))  ;; use complement
+(my-not-empty [])  ;; false 
+(my-not-empty [1 2 3]) ;; true
+
+
 
