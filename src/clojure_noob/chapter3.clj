@@ -18,7 +18,6 @@
       "not really true in the literal sense"))
 
 ;; "when" is a combination of "if" and "do" without an "else". Always returns nil
-
 (when true
   (println "This is when")
   "really true")
@@ -37,7 +36,7 @@
 
 ;; binding names to variables (vs assigning names, standard lingo in programing languages
 ;; that allow multiple assignement (mutability)
-
+`
 ;; classic approach - adding to the already existing variable
 (def severity :mild)
 (def error-message "OH GOD! IT'S A DISASTER! WE'RE ")
@@ -54,7 +53,8 @@
          "MILDLY INCONVENIENCED!"
          "DOOOOOOOMED!")))
 
-(error-message :notmild)
+(error-message :mild)
+
 
 (def myname "Slim Shady")  ;; define variable name
 (str "Hi my name is: " myname)  ;; concatenate strings
@@ -64,7 +64,7 @@
 ;; basic map - associating values to keywords
 {:firstname "Milan", 
  :lastname "Raicevic",
- :age 35}   
+ :age 35}
 
 ;; associate function to string
 {"string-key" +}
@@ -236,6 +236,7 @@
   [treasure-map]
   (println (str "Onwards! " 
                 (get treasure-map :lat)
+                ", "
                 (get treasure-map :lon))))
 (defn announce-treasure-location-and-move 
   [{:keys [lat lon] :as treasure-loc}]
@@ -243,6 +244,17 @@
   (println (str "Longitude: " lon))
   (steer-ship treasure-loc))
 (announce-treasure-location-and-move {:lat 23.4 :lon 12.2})
+
+;; testing how :keys works
+(defn test-keys
+  [{:keys [x y]}]
+  (println x)
+  (println y))
+(def t1 {:a 10 :b 20 :c 30})
+(def t2 {:x 10 :y 20 :c 30})
+(test-keys t1)
+(test-keys t2)
+
 
 ;; function body 
 
@@ -387,7 +399,6 @@
  (symmetrize-body-parts asym-hobbit-body-parts)) 
 
 
-
 ;; alternative way to symmetrise the hobbit body - reduce
 (reduce + [1 2 3 4])
 (reduce + 15 [1 2 3 4]) ;; reduce with optional initial value
@@ -416,4 +427,28 @@
         (recur remaining (+ accumulated-size (:size (first remaining)))))))) ;; if no hit, get next part
 
 (hit asym-hobbit-body-parts) ;; hit the hobbit
+
+;;
+;; Exercises
+;; 
+
+;; 2. Write a function that takes a number and adds 100 to it.
+(defn inc100 [num] (+ num 100))
+(inc100 10)
+
+;; 3. Write a function, dec-maker, that works exactly like the function inc-maker except with subtraction
+(defn dec-maker [dec_by] #(- % dec_by))
+(def dec9 (dec-maker 9))
+(dec9 27)
+
+;; 4. Write a function, mapset, that works like map except the return value is a set
+(defn mapset [fun arr] (set (map fun arr)))
+(mapset inc [1 1 2 2])
+
+;; 5. do later....
+
+
+
+
+
 
