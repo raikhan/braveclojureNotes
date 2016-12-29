@@ -69,6 +69,12 @@
         {:one 4.1
          :two 3.0})   ;; value :two removed from output map
 ;; Exercise: implement map using reduce
+(defn mapreduce 
+  [fun arr]
+  (reduce #(conj %1 (fun %2))
+          '()
+          arr))
+(mapreduce inc [3 4 5])
 
 
 ;; take, drop, take-while and drop-while
@@ -108,6 +114,11 @@
 (some #(> (:critter %) 3) food-journal)
 (some #(> (:critter %) 5) food-journal)
 
+;; in previous example, some only returns true or false, because thats what the predicate function produces
+;; some can return whatever "thruthy" value the predicate makes
+;; the following code uses 'and' function to return the first element that satisfies the predicate
+(some #(and (> (:critter %) 3) %) food-journal)
+
 
 ;; sort and sort-by
 
@@ -125,7 +136,7 @@
 
 
 ;;
-;; Lazy sequences - sequences whole members are not computed before they are needed
+;; Lazy sequences - sequences whose members are not computed until they are needed
 ;;
 ;; Most base function (e.g. map and filter) return lazy seqs
 
